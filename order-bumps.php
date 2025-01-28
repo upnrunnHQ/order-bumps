@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name:     Order Bumps
- * Plugin URI:      https://plugins.wp-cli.org/demo-plugin
+ * Plugin URI:      https://github.com/upnrunnHQ/order-bumps
  * Description:     Display order bumps on the checkout page with AJAX updates and complex conditions.
- * Author:          wp-cli
- * Author URI:      https://wp-cli.org
- * Text Domain:     wp-schema
+ * Author:          Kishores
+ * Author URI:      https://profiles.wordpress.org/kishores
+ * Text Domain:     order-bumps
  * Domain Path:     /languages
  * Version:         0.1.0
  *
@@ -25,15 +25,15 @@ require_once dirname( __FILE__ ) . '/includes/class-order-bumps.php';
 
 
 /**
- * Main instance of WP_Schema.
+ * Main instance of Order_Bumps.
  *
  * Returns the main instance of Formnx to prevent the need to use globals.
  *
- * @since  1.26
- * @return Formnx
+ * @since  0.1.0
+ * @return Order_Bumps
  */
 function ORDERBUMPS() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName
-    return OrderBumps::instance();
+    return Order_Bumps::instance();
 }
 
-$GLOBALS['orderbumps'] = ORDERBUMPS();
+$GLOBALS['order_bumps'] = ORDERBUMPS();

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const orderBumpContainer = document.getElementById("order-bump-products");
+    const orderBumpContainer = document.getElementById("order-bumps-products");
     let excludedProducts = []; // Global state for excluded products
 
     // Log when DOMContentLoaded runs

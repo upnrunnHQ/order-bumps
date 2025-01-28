@@ -3,7 +3,7 @@
  * File containing the class Order_Bumps.
  *
  * @package Order_Bumps
- * @since   1.0.0
+ * @since   0.1.0
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -13,14 +13,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Handles core plugin hooks and action setup.
  *
- * @since 1.0.0
+ * @since 0.1.0
  */
-class OrderBumps {
+class Order_Bumps {
     /**
      * The single instance of the class.
      *
      * @var self
-     * @since  1.0.0
+     * @since  0.1.0
      */
     private static $instance = null;
 
@@ -31,7 +31,7 @@ class OrderBumps {
      * used to manage and evaluate conditions for order bumps.
      *
      * @var ConditionProvider
-     * @since 1.0.0
+     * @since 0.1.0
      */
     public ConditionProvider $condition_provider;
 
@@ -41,9 +41,9 @@ class OrderBumps {
      *
      * Ensures only one instance of Order_Bumps is loaded or can be loaded.
      *
-     * @since  0.0.1
+     * @since  0.1.0
      * @static
-     * @see WPSCHEMA()
+     * @see ORDERBUMPS()
      * @return self Main instance.
      */
     public static function instance() {
@@ -82,8 +82,8 @@ class OrderBumps {
         add_action('woocommerce_checkout_before_order_review', [$this, 'display_order_bumps']);
 
         // Register AJAX actions
-        add_action('wp_ajax_get_order_bump_products', [$this, 'get_order_bump_products']);
-        add_action('wp_ajax_nopriv_get_order_bump_products', [$this, 'get_order_bump_products']);
+        add_action('wp_ajax_get_order_bump_products', [$this, 'get_order_bumps_products']);
+        add_action('wp_ajax_nopriv_get_order_bump_products', [$this, 'get_order_bumps_products']);
         add_action('wp_ajax_add_product_to_cart', [$this, 'add_product_to_cart']);
         add_action('wp_ajax_nopriv_add_product_to_cart', [$this, 'add_product_to_cart']);
     }
@@ -116,10 +116,10 @@ class OrderBumps {
     }
 
     public function display_order_bumps() {
-        echo '<div id="order-bump-products"></div>';
+        echo '<div id="order-bumps-products"></div>';
     }
 
-    public function get_order_bump_products() {
+    public function get_order_bumps_products() {
         // Initialize the composite condition
         $compositeCondition = new CompositeCondition();
 
@@ -130,10 +130,10 @@ class OrderBumps {
         $compositeCondition->addConditions($conditions);
 
         // Allow external developers to add custom conditions
-        do_action('add_order_bump_conditions', $compositeCondition);
+        do_action('add_order_bumps_conditions', $compositeCondition);
 
         // Set logical evaluation (AND/OR) dynamically via a filter
-        $compositeCondition->setLogic(apply_filters('order_bump_conditions_logic', 'AND'));
+        $compositeCondition->setLogic(apply_filters('order_bumps_conditions_logic', 'AND'));
 
         // Evaluate conditions
         if (!$compositeCondition->isSatisfied()) {
@@ -142,7 +142,7 @@ class OrderBumps {
         }
 
         // Fetch products for the order bump (can be customized)
-        $product_ids = apply_filters('order_bump_product_ids', $this->get_default_order_bump_products());
+        $product_ids = apply_filters('order_bumps_product_ids', $this->get_default_order_bump_products());
         $products = [];
 
         foreach ($product_ids as $product_id) {
@@ -185,7 +185,7 @@ class OrderBumps {
      */
     private function get_default_order_bump_products(): array {
         // First, try to get product IDs from an external hook or configuration
-        $product_ids = apply_filters('modify_order_bump_product_ids', [187, 36]);
+        $product_ids = apply_filters('modify_order_bumps_product_ids', [187, 36]);
 
         // If the product IDs are provided (e.g., from settings or a config file)
         if (!empty($product_ids)) {
@@ -201,7 +201,7 @@ class OrderBumps {
             );
         } else {
             // Fallback to dynamic fetching of products with empty query arguments
-            $args = apply_filters('set_order_bump_product_query_args', []);
+            $args = apply_filters('set_order_bumps_product_query_args', []);
 
             // Fetch products based on the provided query args, ensuring we avoid empty args
             if (empty($args)) {
@@ -225,14 +225,14 @@ class OrderBumps {
         }
 
         // Allow other plugins or modules to modify the final product IDs
-        return apply_filters('modify_order_bump_product_ids', $valid_product_ids, $args ?? []);
+        return apply_filters('modify_order_bumps_product_ids', $valid_product_ids, $args ?? []);
     }
 
     /**
      * Loads textdomain for plugin.
      */
     public function load_plugin_textdomain() {
-        load_textdomain( 'wp-schema', WP_LANG_DIR . '/wp-schema/wp-schema-' . apply_filters( 'plugin_locale', get_locale(), 'wp-schema' ) . '.mo' );
-        load_plugin_textdomain( 'wp-schema', false, ORDER_BUMPS_PLUGIN_DIR . '/languages/' );
+        load_textdomain( 'order-bumps', WP_LANG_DIR . '/order-bumps/order-bumps-' . apply_filters( 'plugin_locale', get_locale(), 'order-bumps' ) . '.mo' );
+        load_plugin_textdomain( 'order-bumps', false, ORDER_BUMPS_PLUGIN_DIR . '/languages/' );
     }
 }
